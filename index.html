@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>TMHC8 v40</title>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* === CORE PALETTE === */
+  --bg:#0b1120;--bg2:#151e32;--bg3:#1e2d45;--bg4:#2a3d56;
+  --tx:#e2e8f0;--tx2:#94a3b8;--tx3:#64748b;
+  --bd:rgba(148,163,184,0.08);--bd2:rgba(148,163,184,0.15);
+  --acc:#38bdf8;--acc2:#0ea5e9;--dim:rgba(56,189,248,.06);
+  --ok:#22c55e;--ok2:#16a34a;--wa:#f59e0b;--wa2:#d97706;--er:#ef4444;--er2:#dc2626;
+  --fs-xs:0.78rem;--fs-sm:0.9rem;--fs:1rem;
+  --tab-fs:15px;
+  /* === ELEVATION === */
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow:0 2px 8px rgba(0,0,0,.35);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.4);
+  --shadow-glow:0 0 12px rgba(56,189,248,.15);
+  /* === TRANSITIONS === */
+  --t-fast:0.1s;--t-base:0.2s;--t-slow:0.3s;
+  /* === NEON ACCENTS === */
+  --neon-cyan:#22d3ee;--neon-green:#4ade80;--neon-pink:#f472b6;
+  --neon-orange:#fb923c;--neon-purple:#c084fc;--neon-teal:#5eead4;
+}
+.light{--bg:#f8fafc;--bg2:#f1f5f9;--bg3:#ffffff;--bg4:#e2e8f0;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--bd:rgba(15,23,42,.06);--bd2:rgba(15,23,42,.12);--acc:#0284c7;--dim:rgba(2,132,199,.04);--shadow-sm:0 1px 2px rgba(0,0,0,.08);--shadow:0 2px 8px rgba(0,0,0,.1);--shadow-lg:0 4px 16px rgba(0,0,0,.12);--shadow-glow:0 0 12px rgba(2,132,199,.08);}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:var(--fs);line-height:1.4;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;color:var(--tx);background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;padding:4px 8px;font-size:var(--fs-xs);transition:border-color var(--t-fast),box-shadow var(--t-fast)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+
+/* === LAYOUT === */
+.app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* === HEADER v4 - highlighter alert style === */
+.hdr{background:linear-gradient(135deg,var(--bg2),var(--bg3));border-bottom:2px solid var(--acc);display:flex;flex-direction:column;flex-shrink:0;font-size:var(--fs-xs);box-shadow:0 0 12px rgba(56,189,248,.25),0 0 4px rgba(56,189,248,.1);position:relative;z-index:10}
+.hdr::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--acc),#c084fc,var(--acc));opacity:0.6}
+.hdr-row{display:flex;align-items:center;padding:6px 14px;gap:6px;flex-wrap:nowrap}
+.hdr-row.top{border-bottom:1px solid var(--bd);justify-content:space-between}
+.hdr-kpi{display:flex;gap:4px;align-items:center;flex-shrink:1;flex-wrap:wrap;overflow:hidden}
+.hdr-kpi .kc{padding:4px 7px;min-width:46px;font-size:11px}
+.hdr-kpi .kv{font-size:14px}
+.hdr-kpi .kl{font-size:10px;font-weight:700}
+.hdr-actions{display:flex;gap:3px;align-items:center;flex-shrink:0;margin-left:8px;padding-left:8px;border-left:1px solid var(--bd2)}
+.hdr-tabs{display:flex;gap:1px;align-items:center;background:var(--bg);padding:2px;border-radius:4px}
+.hdr-tab{padding:3px 10px;border-radius:3px;font:600 11px system-ui;cursor:pointer;white-space:nowrap;border:1px solid transparent;color:var(--tx2);transition:all var(--t-fast)}
+.hdr-tab:hover{color:var(--acc)}
+.hdr-tab.active{color:var(--acc);border-color:var(--acc);background:var(--dim)}
+
+/* === MAIN GRID === */
+/* === v41: Three-column single-page workspace === */
+.main{flex:1;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1.1fr);gap:4px;min-height:0;overflow:hidden}
+.main-169{grid-template-columns:minmax(0,2fr) minmax(0,1.2fr)!important}
+.main-43{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+.left{display:flex;flex-direction:column;gap:3px;min-height:0;overflow:hidden}
+.center{display:flex;flex-direction:column;gap:3px;min-height:0;overflow:hidden;background:var(--bg2);border-left:1px solid var(--bd);border-radius:6px 0 0 6px;min-width:200px}
+.right{display:flex;flex-direction:column;gap:3px;min-height:0;overflow:hidden;background:var(--bg2);border-left:1px solid var(--bd);border-radius:6px 0 0 6px;min-width:160px}
+.bottom-profile{height:180px;min-height:120px;max-height:260px;background:var(--bg3);border-top:2px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;resize:vertical}
+.bottom-profile.collapsed{height:28px;min-height:28px;resize:none}
+/* v42: Special Care compact form CSS */
+.sc-section{margin-top:6px;padding-top:6px;border-top:1px solid var(--bd)}
+.sc-header{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:6px}
+.sc-header span{font:700 10px system-ui;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px;margin-right:4px}
+.sc-form{display:flex;flex-direction:column;gap:5px;padding:6px;border:1px solid var(--bd);border-radius:6px;background:var(--bg3)}
+.sc-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sc-row label,.sc-grid label{min-width:72px;color:var(--tx3);font:700 9px system-ui;text-transform:uppercase;letter-spacing:.2px}
+.sc-grid{display:grid;grid-template-columns:72px minmax(90px,1fr) 72px minmax(90px,1fr);gap:4px 6px;align-items:center}
+.sc-grid.full{grid-template-columns:72px minmax(0,1fr)}
+.sc-grid input,.sc-grid textarea{width:100%;min-width:0;font-size:11px;padding:2px 5px;background:var(--bg);border:1px solid var(--bd);border-radius:4px;color:var(--tx)}
+.sc-grid input[type="date"]{font-size:10px;padding:1px 4px}
+.sc-grid textarea{resize:vertical;min-height:24px}
+.sc-toggle-group{display:flex;gap:3px;align-items:center}
+.sc-toggle-group{display:flex;gap:4px}
+/* v41: Center/Right column cards */
+.sm-wrap{display:flex;flex-direction:column;gap:6px}
+.sm-card{background:var(--bg);border:1px solid var(--bd2);border-radius:6px;overflow:hidden}
+.sm-hd{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:linear-gradient(135deg,var(--bg3),var(--bg2));border-bottom:1px solid var(--bd);font:700 11px system-ui;text-transform:uppercase;letter-spacing:.3px}
+.sm-hd-t{color:var(--acc)}
+.sm-hd-badge{font-size:10px;color:var(--tx3);font-weight:500;text-transform:none;letter-spacing:0}
+.sm-bd{padding:5px 8px}
+.sm-row{display:flex;align-items:center;gap:4px;padding:3px 0;border-bottom:1px solid var(--bd2);font-size:12px}
+.sm-row:last-child{border-bottom:none}
+.sm-row-hd{min-width:60px;color:var(--tx3);font-size:11px;font-weight:600}
+.sm-tag{display:inline-flex;align-items:center;padding:2px 6px;border-radius:5px;font-size:11px;font-weight:700;border:1px solid var(--bd);white-space:nowrap;margin:1px}
+.sm-tag-sm{font-size:10px;padding:1px 5px}
+.sm-tag-cnt{font-size:9px;margin-right:4px;opacity:.7}
+.sm-sep{height:1px;background:var(--bd2);margin:6px 0}
+.sm-sub{font-size:10px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin:4px 0}
+.sm-empty{text-align:center;padding:10px;color:var(--tx3);font-size:11px;font-style:italic}
+.sm-wr-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin:4px 0}
+.sm-wr-fill{height:100%;background:linear-gradient(90deg,var(--ok),#34d399);border-radius:3px;transition:width .5s}
+.sm-wr-txt{font-size:10px;color:var(--tx3);text-align:center}
+.sm-appt-row{display:flex;align-items:center;gap:4px;padding:3px 0;border-bottom:1px solid var(--bd2);font-size:12px}
+.sm-appt-row:last-child{border-bottom:none}
+.sm-appt-tm{font-size:11px;color:var(--tx2);font-weight:600;min-width:38px}
+.sm-appt-bed{font-size:10px;color:var(--tx3);background:var(--bg3);padding:1px 4px;border-radius:4px;min-width:28px;text-align:center}
+.sm-appt-nm{flex:1;color:var(--tx);font-size:11px}
+.sm-appt-st{font-size:9px;padding:1px 4px;border-radius:4px;font-weight:700}
+.sm-appt-st-d{color:var(--wa);background:rgba(245,158,11,.1)}
+.sm-appt-st-r{color:var(--ok);background:rgba(34,197,94,.1)}
+.sm-dc-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--bd2);font-size:12px}
+.sm-dc-row:last-child{border-bottom:none}
+.sm-dc-bed{font-size:11px;font-weight:700;color:var(--er);min-width:24px}
+
+/* === KPI ROW v2 - modern cards === */
+.kpi-row{display:flex;gap:5px;padding:4px 8px;background:var(--bg2);border-bottom:1px solid var(--bd);flex-shrink:0;align-items:center;font-size:var(--fs-sm);min-height:42px;overflow-x:auto}
+.kc{background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;padding:5px 10px;text-align:center;position:relative;overflow:hidden;transition:all var(--t-base);box-shadow:var(--shadow-sm);cursor:pointer;opacity:0.9;min-width:52px}
+.kc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:8px 0 0 8px;opacity:0.6}
+.kc:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:var(--shadow-glow);opacity:1}
+.kv{font:800 calc(var(--fs) + 2px) system-ui;line-height:1.1}
+.kl{color:var(--tx3);font:600 12px system-ui;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+/* KPI accent strips */
+.kc[data-type=bed]::before{background:var(--tx3)}
+.kc[data-type=wr]::before{background:var(--ok)}
+.kc[data-type=fall]::before{background:var(--wa)}
+.kc[data-type=dc]::before{background:var(--er)}
+.kc[data-type=tx]::before{background:#c084fc}
+.kc[data-type=adm]::before{background:var(--acc)}
+.kc[data-type=cau]::before{background:#f43f5e}
+.kc[data-type=vre]::before{background:#8b5cf6}
+.kc[data-type=cpe]::before{background:#d946ef}
+.kc[data-type=mra]::before{background:#f59e0b}
+.kc[data-type=txin]::before{background:#06b6d4}
+/* KPI alert pulse animations - intense blink for visibility */
+.kc.alert-glow{border-color:var(--er);box-shadow:0 0 8px rgba(239,68,68,.25)}
+.kc.alert-warn{border-color:var(--wa);box-shadow:0 0 8px rgba(245,158,11,.25)}
+
+
+/* === FLOOR === */
+.floor{flex:1;display:flex;flex-direction:column;gap:8px;overflow-y:auto;min-height:0;padding:4px}
+.fr{display:flex;gap:8px;min-height:0;padding:2px}
+
+/* === SUMMARY CARDS - Organised v2 === */
+.sm-wrap{display:flex;flex-direction:column;gap:8px}
+.sm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sm-card{background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color .15s}
+.sm-card:hover{border-color:var(--acc)}
+.sm-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 6px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,var(--bg3),var(--bg2))}
+.sm-hd-t{font:700 11px system-ui;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);display:flex;align-items:center;gap:6px}
+.sm-hd-badge{font:800 13px system-ui;padding:1px 7px;border-radius:10px;background:var(--bg);border:1px solid var(--bd2);min-width:28px;text-align:center}
+.sm-bd{padding:8px 10px}
+.sm-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px;line-height:1.35}
+.sm-row-hd{font:600 12px system-ui;color:var(--tx2);min-width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sm-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:700;border:1px solid var(--bd);background:var(--bg);margin-right:2px;margin-bottom:2px;white-space:nowrap}
+.sm-tag-sm{padding:1px 5px;font-size:11px;border-radius:4px}
+.sm-tag-lg{padding:3px 10px;font-size:13px}
+.sm-tag-cnt{font-weight:800;margin-right:4px}
+.sm-sep{height:1px;background:var(--bd);margin:5px 0}
+.sm-sub{font:600 11px system-ui;color:var(--tx3);margin:4px 0 2px;text-transform:uppercase;letter-spacing:.5px}
+.sm-empty{color:var(--tx3);font-size:12px;padding:4px 0;font-style:italic}
+.sm-wr-bar{height:5px;border-radius:3px;background:var(--bg);overflow:hidden;margin-top:4px}
+.sm-wr-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ok),#4ade80);transition:width .3s}
+.sm-wr-txt{font:600 12px system-ui;color:var(--tx2);text-align:right;margin-top:2px}
+.sm-appt-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;font-size:12px;transition:background .1s}
+.sm-appt-row:hover{background:var(--bg2)}
+.sm-appt-tm{font:700 11px system-ui;color:var(--acc);min-width:36px;text-align:center;background:var(--bg);padding:2px 4px;border-radius:4px;border:1px solid var(--bd)}
+.sm-appt-bed{font:800 12px system-ui;min-width:22px;text-align:center}
+.sm-appt-nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sm-appt-st{font-size:11px;padding:1px 6px;border-radius:4px;border:1px solid var(--bd);background:var(--bg)}
+.sm-appt-st-d{background:var(--wa);color:#fff;border-color:var(--wa)}
+.sm-appt-st-r{background:var(--ok);color:#fff;border-color:var(--ok)}
+.sm-scr-ov{background:var(--bg2);border-left:3px solid var(--er);padding:6px 8px;border-radius:0 6px 6px 0;margin-bottom:4px}
+.sm-scr-ov:last-child{margin-bottom:0}
+.sm-scr-org{font:700 11px system-ui;text-transform:uppercase;letter-spacing:.5px}
+.sm-done-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:11px;color:var(--tx2);border-bottom:1px dashed var(--bd)}
+.sm-done-row:last-child{border-bottom:none}
+.sm-dc-row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;font-size:12px;background:var(--bg2);margin-bottom:3px}
+.sm-dc-row:last-child{margin-bottom:0}
+.sm-dc-bed{font:800 13px system-ui;min-width:26px;color:var(--er)}
+.sm-dc-arr{color:var(--tx3)}
+.sm-dc-dest{color:var(--acc);font-weight:600;flex:1}
+.sm-dc-dr{font-size:11px;color:var(--tx2);white-space:nowrap}
+@media(max-width:900px){.sm-grid{grid-template-columns:1fr}
+
+/* === SHARED DB CARDS - for all tabs === */
+.db-wrap{display:flex;flex-direction:column;gap:6px;padding:6px}
+.db-card{background:var(--bg3);border:1px solid var(--bd2);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color .15s}
+.db-card:hover{border-color:var(--acc)}
+.db-card-warn{border-color:rgba(245,158,11,.4)}
+.db-card-ok{border-color:rgba(34,197,94,.4)}
+.db-card-err{border-color:rgba(239,68,68,.4)}
+.db-hd{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 6px;border-bottom:1px solid var(--bd);background:linear-gradient(135deg,var(--bg3),var(--bg2))}
+.db-hd-t{font:700 11px system-ui;text-transform:uppercase;letter-spacing:.8px;color:var(--tx3);display:flex;align-items:center;gap:6px}
+.db-hd-badge{font:800 13px system-ui;padding:1px 7px;border-radius:10px;background:var(--bg);border:1px solid var(--bd2);min-width:28px;text-align:center}
+.db-bd{padding:8px 10px}
+.db-row{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;font-size:12px;transition:background .1s}
+.db-row:hover{background:var(--bg2)}
+.db-row-hd{font:600 12px system-ui;color:var(--tx2);min-width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.db-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;border:1px solid var(--bd);background:var(--bg);margin-right:2px;margin-bottom:2px;white-space:nowrap}
+.db-tag-sm{padding:1px 5px;font-size:10px;border-radius:4px}
+.db-sep{height:1px;background:var(--bd);margin:5px 0}
+.db-sub{font:600 11px system-ui;color:var(--tx3);margin:4px 0 2px;text-transform:uppercase;letter-spacing:.5px}
+.db-empty{color:var(--tx3);font-size:12px;padding:6px 0;font-style:italic;text-align:center}
+.db-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.db-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+
+/* App tab specific */
+.appt-card-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;font-size:12px;transition:background .1s;border-bottom:1px solid rgba(148,163,184,0.04)}
+.appt-card-row:hover{background:var(--bg2)}
+.appt-card-row:last-child{border-bottom:none}
+.appt-tm{font:700 11px system-ui;color:var(--acc);min-width:40px;text-align:center;background:var(--bg);padding:2px 5px;border-radius:4px;border:1px solid var(--bd)}
+.appt-bed{font:800 12px system-ui;min-width:26px;text-align:center;color:var(--tx2)}
+.appt-nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.appt-type{font-size:10px;padding:1px 6px;border-radius:4px;border:1px solid var(--bd);background:var(--bg);color:var(--tx3);text-transform:uppercase}
+.appt-st{font-size:10px;padding:1px 6px;border-radius:4px;border:1px solid var(--bd);font-weight:700}
+.appt-st-pend{color:var(--wa);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)}
+.appt-st-done{color:var(--ok);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.appt-actions{display:flex;gap:4px;flex-shrink:0}
+.appt-btn{padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .1s}
+.appt-btn-res{background:rgba(34,197,94,.1);color:var(--ok);border-color:rgba(34,197,94,.3)}
+.appt-btn-res:hover{background:rgba(34,197,94,.2)}
+.appt-btn-edit{background:var(--bg4);color:var(--tx2);border-color:var(--bd2)}
+.appt-btn-edit:hover{background:var(--bg);color:var(--acc)}
+
+/* WR tab specific */
+.wr-doc-card{background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;padding:8px;margin-bottom:6px;overflow:hidden}
+.wr-doc-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 6px;border-bottom:1px solid var(--bd);margin-bottom:4px}
+.wr-doc-name{font:700 12px system-ui;color:var(--tx2)}
+.wr-doc-badge{font:800 11px system-ui;padding:1px 6px;border-radius:8px;background:var(--bg);border:1px solid var(--bd2);color:var(--tx3)}
+.wr-bed-row{display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:4px;font-size:12px}
+.wr-bed-row:hover{background:var(--bg2)}
+.wr-bed-num{font:800 12px system-ui;min-width:24px;color:var(--acc)}
+.wr-bed-nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wr-bed-st{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:700}
+.wr-bed-st-done{color:var(--ok);background:rgba(34,197,94,.1)}
+.wr-bed-st-pend{color:var(--wa);background:rgba(245,158,11,.1)}
+
+/* Screening tab specific */
+.scr-cat-card{background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;padding:8px;margin-bottom:6px}
+.scr-cat-hd{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 6px;border-bottom:1px solid var(--bd);margin-bottom:4px}
+.scr-cat-name{font:700 12px system-ui;text-transform:uppercase;letter-spacing:.5px}
+.scr-cat-badge{font:800 11px system-ui;padding:1px 6px;border-radius:8px;background:var(--bg);border:1px solid var(--bd2)}
+.scr-bed-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid var(--bd);background:var(--bg);margin:2px;cursor:pointer;transition:all .1s}
+.scr-bed-chip:hover{border-color:var(--acc);transform:translateY(-1px)}
+.scr-bed-chip .pt-name{font-size:10px;color:var(--tx3);margin-left:4px;font-weight:400}
+
+/* Bath tab specific */
+.bath-wrap{display:flex;flex-direction:column;gap:6px;padding:6px}
+.bath-cub-row{display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--bg3);border:1px solid var(--bd2);border-radius:6px}
+.bath-cub-name{font:700 11px system-ui;text-transform:uppercase;min-width:40px;color:var(--tx2)}
+.bath-bed-list{display:flex;flex-wrap:wrap;gap:3px;flex:1}
+.bath-bed-chip{padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--bd);cursor:pointer;transition:all .1s}
+.bath-bed-chip:hover{transform:scale(1.05)}
+.bath-bed-chip.am{background:rgba(56,189,248,.15);color:var(--acc);border-color:rgba(56,189,248,.3)}
+.bath-bed-chip.pm{background:rgba(168,85,247,.15);color:#c084fc;border-color:rgba(168,85,247,.3)}
+.bath-bed-chip.nb{background:rgba(148,163,184,.08);color:var(--tx3);border-color:var(--bd);opacity:.6}
+
+/* Tools tab specific */
+.tool-card{background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;padding:8px;margin-bottom:6px}
+.tool-card-hd{font:700 11px system-ui;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--bd)}
+.tool-btn-row{display:flex;flex-wrap:wrap;gap:4px}
+.tool-action-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .1s;background:var(--bg4);color:var(--tx2)}
+.tool-action-btn:hover{background:var(--bg);border-color:var(--acc);color:var(--acc)}
+
+@media(max-width:900px){.db-grid-2{grid-template-columns:1fr}.db-grid-3{grid-template-columns:1fr}}
+}
+
+/* === CUBICLE v3 - compact === */
+.cb{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;border:1px solid var(--bd2);border-radius:4px;overflow:hidden;background:var(--bg2);box-shadow:var(--shadow-sm)}
+.cb-t{padding:2px 6px;font:700 10px system-ui;text-transform:uppercase;letter-spacing:0.5px;color:var(--tx3);background:var(--bg3);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;line-height:1.4}
+.cb-b{display:grid;gap:2px;padding:3px;min-height:0;grid-template-columns:1fr;align-items:stretch}
+
+/* === BED CARD v5 - balanced === */
+.bc{display:flex;align-items:center;gap:0;padding:0 4px;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;cursor:pointer;transition:all var(--t-fast);font-size:var(--fs-xs);min-height:42px;position:relative;line-height:1.3}
+.bc:hover{border-color:var(--acc);background:var(--bg4);box-shadow:var(--shadow-glow)}
+.bc.sel{border-color:var(--acc);background:var(--dim);box-shadow:0 0 0 2px rgba(56,189,248,.25),var(--shadow-glow)}
+.bc.vac{opacity:0.25;border-style:dashed;background:var(--bg2)}
+/* WR done indicator strip */
+.bc[data-wr="done"]::after{content:'';position:absolute;right:0;top:2px;bottom:2px;width:3px;background:var(--ok);border-radius:2px;opacity:0.7}
+.bc[data-wr="pending"]::after{content:'';position:absolute;right:0;top:2px;bottom:2px;width:3px;background:var(--tx3);border-radius:2px;opacity:0.3}
+
+.bc .col-left{display:flex;align-items:center;gap:0;flex:1;min-width:120px;overflow:hidden}
+.bc .col-num{width:26px;font-weight:800;color:var(--tx2);text-align:left;flex-shrink:0;padding-left:3px;font-size:11px}
+.bc.vac .col-num{color:var(--tx3)}
+.bc.sel .col-num{color:var(--acc);text-shadow:0 0 6px rgba(56,189,248,.4)}
+.bc .col-dx{flex:1;min-width:50px;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;padding-left:3px;text-align:left;font-weight:400;font-size:11px}
+.bc .col-dr{width:80px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0;padding-left:3px;text-align:left;font-size:11px}
+.bc .col-right{display:flex;gap:4px;flex-shrink:0;align-items:center;margin-left:auto;padding-left:3px}
+.bc .col-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center;max-width:228px}
+
+/* === DOTS === */
+.dt{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dt-rd.ok{background:var(--ok);box-shadow:0 0 4px rgba(34,197,94,.4)}
+.dt-rd.ng{border:1.5px solid var(--tx3);background:transparent}
+.dt-pd.bl{background:var(--acc)}.dt-pd.or{background:var(--wa)}.dt-pd.re{background:var(--er)}
+
+/* === TAGS v5 - balanced === */
+.tg{padding:2px 8px;border-radius:4px;font:700 11px system-ui;text-transform:uppercase;border:1px solid;line-height:1.2;letter-spacing:0.4px;display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:22px;gap:2px}
+.tv{background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.3);box-shadow:0 0 3px rgba(167,139,250,.1)}
+.tc{background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.3);box-shadow:0 0 3px rgba(167,139,250,.1)}
+.tm{background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.3);box-shadow:0 0 3px rgba(167,139,250,.1)}
+.tca{background:rgba(167,139,250,.1);color:#a78bfa;border-color:rgba(167,139,250,.3);box-shadow:0 0 3px rgba(167,139,250,.1)}
+.tf{background:rgba(245,158,11,.08);color:#d97706;border-color:rgba(245,158,11,.25);box-shadow:0 0 3px rgba(245,158,11,.08)}
+.td{background:rgba(239,68,68,.08);color:#dc2626;border-color:rgba(239,68,68,.25);box-shadow:0 0 3px rgba(239,68,68,.08)}
+.th{background:rgba(56,189,248,.08);color:#0ea5e9;border-color:rgba(56,189,248,.25);box-shadow:0 0 3px rgba(56,189,248,.08)}
+.tcv{background:rgba(167,139,250,.06);color:#a78bfa;border-color:rgba(167,139,250,.2);font-style:italic;box-shadow:0 0 2px rgba(167,139,250,.08)}
+.tcc{background:rgba(244,114,182,.06);color:#a78bfa;border-color:rgba(244,114,182,.2);font-style:italic;box-shadow:0 0 2px rgba(244,114,182,.08)}
+.tcm{background:rgba(167,139,250,.06);color:#a78bfa;border-color:rgba(167,139,250,.2);font-style:italic;box-shadow:0 0 2px rgba(167,139,250,.08)}
+
+/* === RIGHT PANEL === */
+.rp{display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--bg2);border-left:1px solid var(--bd);border-radius:6px 0 0 6px}
+.panel-title{display:flex;align-items:center;gap:6px;padding:6px 10px;font:800 12px system-ui;letter-spacing:.4px;text-transform:uppercase;color:var(--tx2);border-bottom:1px solid var(--bd);background:var(--bg2);flex-shrink:0}
+.panel-title-ic{font-size:13px}
+.sm-card[data-priority="high"]{border-left:3px solid var(--acc);box-shadow:0 0 0 1px rgba(56,189,248,.08)}
+.rp-db{display:flex;flex-direction:column;padding:6px;overflow-y:auto;flex:1;min-height:0;gap:4px;position:relative}
+.rp-db-inner{flex:1;min-height:0;overflow-y:auto}
+.rp-pp{display:none;flex-direction:column;overflow:hidden;min-height:0}
+.rp-pp.active{display:flex}
+
+/* DB panel */
+.rpi-t{font:700 var(--fs-sm) system-ui;color:var(--tx3);text-transform:uppercase;margin:6px 0 4px;padding:4px 0;border-bottom:1px solid var(--bd);letter-spacing:0.5px}
+.rpi-i{padding:4px 0;border-bottom:1px solid rgba(148,163,184,0.04);cursor:pointer;font-size:var(--fs-sm);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color var(--t-fast)}
+.rpi-i:hover{color:var(--acc)}
+
+/* PP panel */
+.pphd{padding:8px 10px;background:var(--bg3);border-bottom:1px solid var(--bd);flex-shrink:0;border-radius:4px 4px 0 0}
+.ppbt{font:800 var(--fs) system-ui;color:var(--acc)}
+.ppsub{color:var(--tx2);font-size:var(--fs-sm);line-height:1.5}
+.pcmo{color:var(--wa);font-size:var(--fs-sm);line-height:1.5}
+.ppnav{display:flex;gap:4px;padding:5px;background:var(--bg3);border-bottom:1px solid var(--bd);flex-shrink:0}
+.ppbd{flex:1;overflow-y:auto;padding:6px 10px}
+/* Profile Tab System */
+.pptabs{display:flex;gap:2px;padding:4px 6px;background:var(--bg3);border-bottom:1px solid var(--bd2);flex-shrink:0;position:sticky;top:0;z-index:10}
+.pptab{padding:5px 10px;border-radius:5px;border:none;background:transparent;color:var(--tx3);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;font-weight:600}
+.pptab:hover{background:var(--bg2)}
+.pptab.on{background:var(--acc);color:#fff;box-shadow:0 1px 4px rgba(56,189,248,.3)}
+.pptab .badge{font-size:9px;background:rgba(255,255,255,.25);color:#fff;padding:1px 4px;border-radius:8px;margin-left:3px;min-width:16px;text-align:center;display:inline-block}
+.pptab:not(.on) .badge{background:var(--bg);color:var(--tx3)}
+.pptab-panel{display:none;padding:8px 6px;animation:ppfade .2s ease}
+.pptab-panel.on{display:block}
+@keyframes ppfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.ppsec{margin-bottom:10px;background:var(--bg2);border:1px solid var(--bd2);border-radius:6px;overflow:hidden}
+.ppsec-hd{display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:linear-gradient(135deg,var(--bg3),var(--bg2));border-bottom:1px solid var(--bd);font:700 11px system-ui;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px}
+.ppsec-hd .cnt{font-size:10px;color:var(--tx3);font-weight:500;text-transform:none;letter-spacing:0}
+.ppsec-bd{padding:6px 8px}
+.ppgrid2{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.ppgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.ppfield{display:flex;flex-direction:column;gap:1px}
+.ppfield .lbl{font-size:10px;color:var(--tx3);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.ppfield .val{font-size:12px;color:var(--tx);font-weight:500}
+.ppfield .inp{width:100%;font-size:12px;padding:3px 6px;background:var(--bg);border:1px solid var(--bd);border-radius:4px;color:var(--tx)}
+.pprow{display:flex;align-items:center;gap:4px;padding:3px 0;border-bottom:1px solid var(--bd2);font-size:12px}
+.pprow:last-child{border-bottom:none}
+.pprow .lbl{min-width:60px;color:var(--tx3);font-size:11px;font-weight:600}
+.pprow .val{flex:1;color:var(--tx)}
+.pptag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;border:1px solid var(--bd);white-space:nowrap;margin:1px}
+.ppbadge{font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700}
+.ppstatus-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px}
+.ppalert-bar{padding:4px 6px;border-radius:4px;font-size:11px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.ppmini-btn{font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid var(--bd2);background:var(--bg3);color:var(--tx2);cursor:pointer;transition:all .15s;position:relative}
+.ppmini-btn:hover{background:var(--bg);color:var(--tx);box-shadow:0 0 6px rgba(148,163,184,.15)}
+.ppmini-btn.on{background:var(--ok);color:#fff;border-color:var(--ok);box-shadow:0 0 8px rgba(34,197,94,.35),0 0 16px rgba(34,197,94,.15);text-shadow:0 0 4px rgba(255,255,255,.4)}
+.ppmini-btn.warn{background:var(--wa);color:#fff;border-color:var(--wa);box-shadow:0 0 8px rgba(245,158,11,.35),0 0 16px rgba(245,158,11,.15);text-shadow:0 0 4px rgba(255,255,255,.4)}
+.ppmini-btn.danger{background:var(--er);color:#fff;border-color:var(--er);box-shadow:0 0 8px rgba(239,68,68,.35),0 0 16px rgba(239,68,68,.15);text-shadow:0 0 4px rgba(255,255,255,.4)}
+.ppmini-btn.on:hover{box-shadow:0 0 10px rgba(34,197,94,.5),0 0 20px rgba(34,197,94,.2);transform:translateY(-1px)}
+.ppmini-btn.warn:hover{box-shadow:0 0 10px rgba(245,158,11,.5),0 0 20px rgba(245,158,11,.2);transform:translateY(-1px)}
+.ppmini-btn.danger:hover{box-shadow:0 0 10px rgba(239,68,68,.5),0 0 20px rgba(239,68,68,.2);transform:translateY(-1px)}
+.ppempty{text-align:center;padding:16px;color:var(--tx3);font-size:11px;font-style:italic}
+.ppchip-row{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px}
+.pptime{font-size:10px;color:var(--tx3);font-weight:500;white-space:nowrap}
+.ppitem{font-size:12px;color:var(--tx);flex:1}
+.ppaction{font-size:10px;color:var(--acc);font-weight:600;cursor:pointer}
+.ppaction:hover{text-decoration:underline}
+.ppc{background:var(--bg3);border:1px solid var(--bd);border-radius:6px;padding:6px 10px;margin-bottom:6px;box-shadow:var(--shadow-sm);line-height:1.5}
+.ppt{font:700 11px system-ui;color:var(--tx3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;border-bottom:1px solid var(--bd);padding-bottom:4px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.ppc.collapsed .ppcbody{display:none}
+.ppr{display:flex;gap:4px;padding:3px 0;font-size:var(--fs-sm);align-items:center;line-height:1.5}
+.ppl{color:var(--tx3);min-width:65px;flex-shrink:0;font-size:var(--fs-sm);font-weight:600;line-height:1.5}
+.ppvl{flex:1;color:var(--tx);font-weight:500;font-size:var(--fs-sm);line-height:1.5}
+.ppvl2{color:var(--tx2);font-size:var(--fs-sm);line-height:1.5}
+.ppem{color:var(--tx3);font-size:var(--fs-sm);padding:4px 0;line-height:1.5}
+
+/* === TABS v2 - modern pill style === */
+.tab-btn{padding:5px 12px;border-radius:6px;font:600 var(--tab-fs) system-ui;color:var(--tx2);cursor:pointer;white-space:nowrap;border:1.5px solid transparent;background:transparent;opacity:0.6;transition:all var(--t-fast)}
+.tab-btn:hover{opacity:0.9;background:var(--bg4)}
+.tab-btn.on{opacity:1;border-color:var(--acc);color:var(--acc);background:var(--dim);box-shadow:0 0 8px rgba(56,189,248,.25),0 0 16px rgba(56,189,248,.1),var(--shadow-glow);text-shadow:0 0 4px rgba(56,189,248,.2)}
+.db-tab{padding:5px 12px;border-radius:6px;font:600 var(--tab-fs) system-ui;color:var(--tx2);cursor:pointer;white-space:nowrap;border:1.5px solid transparent;background:transparent;opacity:0.6;transition:all var(--t-fast)}
+.db-tab:hover{opacity:0.9;background:var(--bg4);color:var(--acc)}
+.db-tab.on{opacity:1;border-color:var(--acc);color:var(--acc);background:var(--dim);box-shadow:var(--shadow-glow)}
+.optab{padding:5px 12px;border-radius:6px;font:600 var(--tab-fs) system-ui;color:var(--tx2);cursor:pointer;white-space:nowrap;border:1px solid transparent;transition:all var(--t-fast)}
+.optab:hover{background:var(--bg4)}
+.optab.on{background:var(--dim);border-color:var(--acc);color:var(--acc)}
+.opbd{flex:1;overflow-y:auto;padding:8px 10px}
+.op-tabs{display:flex;gap:4px;padding:6px;background:var(--bg3);border-bottom:1px solid var(--bd);flex-shrink:0;min-height:40px;align-items:center}
+
+/* === TOGGLE SWITCH v2 === */
+.tsw{position:relative;width:32px;height:16px;background:var(--bg2);border-radius:8px;cursor:pointer;transition:all var(--t-base);border:2px solid var(--tx3);flex-shrink:0;box-shadow:inset 0 1px 3px rgba(0,0,0,.25)}
+.tsw.on{background:var(--acc);border-color:var(--acc2);box-shadow:inset 0 1px 3px rgba(0,0,0,.15),0 0 6px rgba(56,189,248,.2)}
+.tsw::after{content:'';position:absolute;width:10px;height:10px;background:var(--tx3);border-radius:50%;top:1px;left:1px;transition:all var(--t-base);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.tsw.on::after{left:17px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tsw-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:var(--fs-xs)}
+.tsw-lbl{flex:1;color:var(--tx2);font-weight:500}
+.tsw-off{color:var(--tx3);font:700 12px system-ui;text-transform:uppercase}
+.tsw-on{color:var(--acc);font:700 12px system-ui;text-transform:uppercase}
+
+/* === STATUS BUTTONS === */
+.sbtn{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;font:600 var(--fs-xs) system-ui;cursor:pointer;border:1.5px solid transparent;transition:all var(--t-fast)}
+.sbtn .sdt{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.sbtn-rnd{border-color:rgba(34,197,94,0.4);color:var(--ok);background:rgba(34,197,94,.08)}
+.sbtn-nrnd{border-color:var(--tx3);color:var(--tx2);background:var(--bg3);opacity:0.6}
+.sbtn-adm{border-color:rgba(56,189,248,0.4);color:var(--acc);background:rgba(56,189,248,.08)}
+.sbtn-tx{border-color:rgba(168,85,247,0.4);color:#c084fc;background:rgba(168,85,247,.08)}
+.sbtn-dc{border-color:rgba(239,68,68,0.4);color:var(--er);background:rgba(239,68,68,.08)}
+.sbtn:hover{opacity:1;transform:translateY(-1px);box-shadow:var(--shadow)}
+.sbtn-nrnd:hover{opacity:0.8;border-color:var(--acc);color:var(--acc)}
+
+/* === CUBICLE GENDER === */
+.cb-f{background:linear-gradient(180deg,rgba(236,72,153,.15),rgba(13,27,45,.6));border-color:rgba(236,72,153,.65)!important}
+.cb-m{background:linear-gradient(180deg,rgba(59,130,246,.15),rgba(13,27,45,.6));border-color:rgba(59,130,246,.65)!important}
+.cb-x{background:linear-gradient(180deg,rgba(168,85,247,.12),rgba(13,27,45,.6));border-color:rgba(168,85,247,.55)!important}
+.light .cb-f{background:linear-gradient(180deg,rgba(236,72,153,.1),rgba(240,244,248,.6));border-color:rgba(236,72,153,.5)!important}
+.light .cb-m{background:linear-gradient(180deg,rgba(59,130,246,.1),rgba(240,244,248,.6));border-color:rgba(59,130,246,.5)!important}
+.light .cb-x{background:linear-gradient(180deg,rgba(168,85,247,.08),rgba(240,244,248,.6));border-color:rgba(168,85,247,.4)!important}
+
+/* === NOTICE BAR v2 - subtle === */
+.nbar{min-height:32px;background:var(--bg2);border-top:1px solid var(--bd);display:flex;align-items:center;padding:3px 12px;gap:8px;flex-shrink:0;cursor:pointer;font-size:var(--fs-xs)}
+.nlbl{color:var(--tx3);font:700 var(--fs-xs) system-ui;text-transform:uppercase;flex-shrink:0;letter-spacing:0.5px}
+.ntxt{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+/* WR urgent indicator */
+.nbar-wr-urgent{border-top-color:var(--wa);background:linear-gradient(90deg,rgba(245,158,11,.08),var(--bg2))}
+.nbar-wr-urgent .nlbl{color:var(--wa)}
+
+/* === BUTTONS v2 - refined === */
+.btn{padding:4px 10px;border-radius:5px;font:600 var(--fs-xs) system-ui;cursor:pointer;border:1.5px solid transparent;transition:all var(--t-fast);display:inline-flex;align-items:center;gap:4px}
+.btn-p{background:var(--acc);color:#fff;border-color:var(--acc2);box-shadow:0 0 8px rgba(56,189,248,.3),0 2px 6px rgba(56,189,248,.2);text-shadow:0 0 4px rgba(255,255,255,.3)}
+.btn-p:hover{background:var(--acc2);box-shadow:0 0 12px rgba(56,189,248,.4),0 0 24px rgba(56,189,248,.15),0 3px 10px rgba(56,189,248,.3);transform:translateY(-1px)}
+.btn-s{background:var(--bg3);color:var(--tx2);border-color:var(--tx3);opacity:0.75}
+.btn-s:hover{border-color:var(--acc);color:var(--acc);opacity:1;background:var(--dim);box-shadow:0 0 8px rgba(56,189,248,.2),0 0 16px rgba(56,189,248,.08);transform:translateY(-1px)}
+.btn-d{background:rgba(239,68,68,.08);color:var(--er);border-color:rgba(239,68,68,.3);box-shadow:0 0 6px rgba(239,68,68,.1)}
+.btn-d:hover{background:rgba(239,68,68,.14);border-color:var(--er);box-shadow:0 0 10px rgba(239,68,68,.25),0 0 20px rgba(239,68,68,.1),0 2px 6px rgba(239,68,68,.12);transform:translateY(-1px)}
+.btn-g{background:rgba(34,197,94,.08);color:var(--ok);border-color:rgba(34,197,94,.3);box-shadow:0 0 6px rgba(34,197,94,.1)}
+.btn-g:hover{background:rgba(34,197,94,.14);border-color:var(--ok);box-shadow:0 0 10px rgba(34,197,94,.25),0 0 20px rgba(34,197,94,.1),0 2px 6px rgba(34,197,94,.12);transform:translateY(-1px)}
+.btn-w{background:rgba(245,158,11,.08);color:var(--wa);border-color:rgba(245,158,11,.3);box-shadow:0 0 6px rgba(245,158,11,.1)}
+.btn-w:hover{background:rgba(245,158,11,.14);border-color:var(--wa);box-shadow:0 0 10px rgba(245,158,11,.25),0 0 20px rgba(245,158,11,.1),0 2px 6px rgba(245,158,11,.12);transform:translateY(-1px)}
+.btn:disabled{opacity:.35;cursor:not-allowed;border-color:var(--tx3)!important;color:var(--tx3)!important;background:var(--bg4)!important;box-shadow:none!important}
+
+/* === TABLES v2 === */
+.tbl{width:100%;border-collapse:collapse;font-size:var(--fs-xs)}
+.tbl th{text-align:left;padding:3px 8px;font:700 var(--fs-xs) system-ui;color:var(--tx3);text-transform:uppercase;border-bottom:1px solid var(--bd2);background:var(--bg4);letter-spacing:0.5px}
+.tbl td{padding:3px 8px;border-bottom:1px solid rgba(148,163,184,0.04);transition:background var(--t-fast)}
+.tbl tr:hover td{background:rgba(148,163,184,0.04)}
+
+/* === TOGGLE CHIP v2 === */
+.tchip{display:inline-flex;padding:3px 8px;border-radius:5px;font:600 var(--fs-xs) system-ui;border:1.5px solid var(--tx3);cursor:pointer;transition:all var(--t-fast);white-space:nowrap;background:transparent;color:var(--tx3);opacity:0.6;align-items:center;gap:3px}
+.tchip.on{border-color:var(--acc);background:var(--dim);color:var(--acc);opacity:1;box-shadow:var(--shadow-glow)}
+.tchip:hover{opacity:0.85}
+.tchip.on:hover{opacity:1;transform:translateY(-1px)}
+
+/* === BATH GRID v2 === */
+.bath-grid{display:grid;grid-template-columns:36px 1fr 40px 50px repeat(7,36px);gap:1px;font-size:var(--fs-xs);align-items:center}
+.bath-grid.hdr{background:var(--bg4);font-weight:700;font-size:var(--fs-xs);color:var(--tx3);text-transform:uppercase;padding:3px 0}
+.bath-grid .c{padding:3px 2px;text-align:center;border-bottom:1px solid var(--bd)}
+.bath-grid .c.name{text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bath-grid .toggle{cursor:pointer;border-radius:4px;font-size:12px;padding:2px 0;transition:all var(--t-fast)}
+.bath-grid .toggle:hover{transform:scale(1.05)}
+.bath-grid .toggle.am{background:rgba(56,189,248,.18);color:var(--acc);font-weight:700}
+.bath-grid .toggle.pm{background:rgba(168,85,247,.18);color:#c084fc;font-weight:700}
+.bath-grid .toggle.nb{background:transparent;color:var(--tx3);opacity:0.5}
+
+/* === HANDOVER EDITOR === */
+.ho-ed{width:100%;min-height:80px;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;font-size:var(--fs-xs);line-height:1.5;color:var(--tx);outline:none;overflow-y:auto;max-height:200px;white-space:pre-wrap;word-break:break-word;transition:border-color var(--t-fast),box-shadow var(--t-fast)}
+.ho-ed:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+.ho-ed:empty:before{content:'Type here...';color:var(--tx3)}
+
+/* === HANDOVER KEY POINTS === */
+.dkp-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:4px;padding:6px;margin-bottom:6px}
+.dkp-card .dkp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.dkp-card .dkp-date{font-size:10px;color:var(--tx3);font-weight:600}
+.dkp-card .dkp-cat{font-size:9px;padding:1px 6px;border-radius:3px;text-transform:uppercase;font-weight:700}
+.dkp-cat-Clinical{background:rgba(56,189,248,.15);color:var(--acc)}
+.dkp-cat-Nursing{background:rgba(168,85,247,.15);color:#c084fc}
+.dkp-cat-Admin{background:rgba(245,158,11,.12);color:var(--wa)}
+.dkp-cat-Social{background:rgba(34,197,94,.12);color:var(--ok)}
+.dkp-cat-Other{background:var(--bg3);color:var(--tx2)}
+.dkp-card .dkp-content{font-size:var(--fs-xs);color:var(--tx);white-space:pre-wrap;word-break:break-word}
+.dkp-card .dkp-reporter{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* === PENDING ACTIONS === */
+.pact-row{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(148,163,184,0.06);font-size:var(--fs-xs)}
+.pact-row .pact-chk{width:14px;height:14px;accent-color:var(--acc);cursor:pointer}
+.pact-row .pact-txt{flex:1}
+.pact-row .pact-txt.done{text-decoration:line-through;color:var(--tx3)}
+.pact-row .pact-del{color:var(--er);cursor:pointer;font-size:12px;padding:2px 4px;border-radius:3px}
+.pact-row .pact-del:hover{background:rgba(239,68,68,.1)}
+
+/* === APPOINTMENT ROW === */
+.appt-row{display:grid;grid-template-columns:90px 50px 1fr 55px 55px 80px 30px;gap:3px;align-items:center;margin-bottom:3px;padding:2px 0;border-bottom:1px solid rgba(148,163,184,0.04)}
+
+/* === SETTINGS === */
+.view{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow-y:auto}
+
+/* === WORKFLOW === */
+.wf-box{background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;width:560px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg)}
+.wf-head{padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--bg3);display:flex;align-items:center;justify-content:space-between}
+.wf-body{flex:1;overflow-y:auto;padding:14px}
+.wf-foot{padding:10px 16px;border-top:1px solid var(--bd);background:var(--bg3);display:flex;gap:8px;justify-content:flex-end}
+.wf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.wf-bedbtn{padding:8px 4px;border-radius:6px;font:600 var(--fs-sm) system-ui;cursor:pointer;border:2px solid var(--bd);background:var(--bg3);color:var(--tx);text-align:center;transition:all var(--t-fast)}
+.wf-bedbtn:hover{border-color:var(--acc);background:var(--dim);transform:translateY(-1px)}
+.wf-bedbtn.sel{border-color:var(--acc);background:var(--dim);box-shadow:var(--shadow-glow)}
+.wf-label{color:var(--tx3);font:600 var(--fs-xs) system-ui;text-transform:uppercase;margin-bottom:4px}
+.wf-field{margin-bottom:10px}
+
+/* === TOAST v2 === */
+.tc-box{position:fixed;top:10px;right:10px;z-index:2000;display:flex;flex-direction:column;gap:4px}
+.to{background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;padding:8px 12px;font:600 var(--fs-sm) system-ui;animation:toastIn var(--t-base);box-shadow:var(--shadow-lg)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.to.ok{border-left:3px solid var(--ok)}
+.to.wa{border-left:3px solid var(--wa)}
+.to.er{border-left:3px solid var(--er)}
+
+/* === OVERLAYS === */
+.act-overlay,.rst-overlay,.pend-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+.pend-box{background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;width:640px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg)}
+.rst-box{background:var(--bg2);border:1px solid var(--bd2);border-radius:10px;width:480px;max-width:96vw;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg)}
+
+/* === PRINT === */
+@media print{body{height:auto;overflow:visible;background:#fff}.app{display:none!important}.tc-box{display:none!important}#hpop{display:none!important}.ho-print{display:block!important;position:static}}
+.ho-print{display:none}
+
+/* === HOVER POPUP v2 === */
+#hpop{position:fixed;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:10px;z-index:500;box-shadow:var(--shadow-lg);display:none;min-width:180px;max-width:260px;font-size:var(--fs-xs);backdrop-filter:blur(8px)}
+
+/* === SCROLLBAR v2 === */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--tx3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--tx2)}
+
+/* === SCREENING TAB === */
+.scr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:4px}
+.scr-card{background:var(--bg3);border:1px solid var(--bd);border-radius:6px;padding:6px;font-size:var(--fs-xs);cursor:pointer;transition:all var(--t-fast)}
+.scr-card:hover{border-color:var(--acc);box-shadow:var(--shadow-glow)}
+.scr-card.done{border-left:3px solid var(--ok);opacity:0.7}
+.scr-card.overdue{border-left:3px solid var(--er)}
+.scr-card.pending{border-left:3px solid var(--wa)}
+
+/* === WARD GROUP in WR VIEW === */
+.ward-group{margin-bottom:8px;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--bg3)}
+.ward-group-header{padding:4px 8px;background:var(--bg4);font:700 12px system-ui;color:var(--tx2);display:flex;justify-content:space-between;align-items:center;letter-spacing:0.5px}
+.ward-group-header.all-done{color:var(--ok);background:rgba(34,197,94,.08)}
+.ward-group-body{padding:4px}
+
+/* === ANIMATIONS === */
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,.2)}50%{box-shadow:0 0 0 4px rgba(56,189,248,0)}}
+.pulse-glow{animation:pulseGlow 2s infinite}
+
+
+/* === CALENDAR GRID === */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-size:12px}
+.cal-day{background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:4px;min-height:80px}
+.cal-day.hd{background:var(--dim);border-color:var(--acc)}
+.cal-day-t{font:700 12px system-ui;margin-bottom:3px;color:var(--tx2)}
+.cal-slot{padding:2px 4px;border-radius:3px;margin-bottom:2px;font-size:11px;cursor:pointer;transition:all var(--t-fast)}
+.cal-slot.s1{background:rgba(56,189,248,.1);border-left:2px solid var(--acc)}
+.cal-slot.s2{background:rgba(245,158,11,.1);border-left:2px solid var(--wa)}
+.cal-slot.s3{background:rgba(168,85,247,.1);border-left:2px solid #c084fc}
+.cal-slot:hover{transform:scale(1.02)}
+
+/* Patient Journey */
+/* === TOGGLE CHIP OK/NG === */
+.tg.ok{background:rgba(34,197,94,.12);color:var(--ok);border-color:rgba(34,197,94,.35)}
+.tg.ng{background:var(--bg2);color:var(--tx3);border-color:var(--bd2);opacity:0.5}
+
+.pj{min-height:44px;padding:4px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg3);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:2px;justify-content:center}
+.pj-row{display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--tx2);flex-wrap:wrap}
+.pj-t{font-weight:700;font-size:12px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px}
+.pj-v{font-weight:800;font-size:var(--fs);color:var(--tx)}
+.pj-bed{cursor:pointer;color:var(--acc);font-weight:700}
+.pj-bed:hover{text-decoration:underline}
+.pj-dc{color:var(--er)}
+.pj-tx{color:#c084fc}
+.pj-mdro{color:#a78bfa}
+
+/* Patient Journey */
+/* === TOGGLE CHIP OK/NG === */
+.tg.ok{background:rgba(34,197,94,.12);color:var(--ok);border-color:rgba(34,197,94,.35)}
+.tg.ng{background:var(--bg2);color:var(--tx3);border-color:var(--bd2);opacity:0.5}
+
+.pj{min-height:44px;padding:4px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg3);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:2px;justify-content:center}
+.pj-row{display:flex;align-items:center;gap:6px;font-size:var(--fs-xs);color:var(--tx2);flex-wrap:wrap}
+.pj-t{font-weight:700;font-size:12px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.5px}
+.pj-v{font-weight:800;font-size:var(--fs);color:var(--tx)}
+.pj-bed{cursor:pointer;color:var(--acc);font-weight:700}
+.pj-bed:hover{text-decoration:underline}
+.pj-dc{color:var(--er)}
+.pj-tx{color:#c084fc}
+.pj-mdro{color:#a78bfa}
+
+
+/* Layout Enhancement: Tool Cards */
+.tool-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:10px;margin-bottom:10px}
+.tool-card-hd{font:600 12px system-ui;color:var(--tx2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tool-card-hd .badge{font-size:10px;background:var(--bg3);color:var(--tx3);padding:2px 6px;border-radius:10px;min-width:18px;text-align:center}
+.tool-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--bd2)}
+.tool-row:last-child{border-bottom:none}
+.tool-row .name{flex:1;font-size:12px;color:var(--tx)}
+.tool-row .ward{font-size:11px;color:var(--tx3);min-width:60px}
+.tool-row .del{width:22px;height:22px;border-radius:50%;border:none;background:var(--bg3);color:var(--tx3);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tool-row .del:hover{background:var(--wa);color:#fff}
+.tool-input-row{display:flex;gap:6px;margin-bottom:8px}
+.tool-input-row input{flex:1;font-size:12px;padding:5px 8px;background:var(--bg);border:1px solid var(--bd2);border-radius:4px;color:var(--tx)}
+.tool-input-row input::placeholder{color:var(--tx3)}
+.tool-input-row .btn-add{padding:5px 12px;border-radius:4px;border:none;background:var(--ok);color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.tool-input-row .btn-add:hover{opacity:0.9}
+
+/* Layout Enhancement: Compact Tabs */
+#dbTabBar{display:flex;gap:2px;padding:4px;background:var(--bg2);border-bottom:1px solid var(--bd2);overflow-x:auto}
+#dbTabBar .dbt{padding:6px 10px;border-radius:4px;border:none;background:transparent;color:var(--tx3);font-size:12px;cursor:pointer;white-space:nowrap;transition:background .15s}
+#dbTabBar .dbt:hover{background:var(--bg3)}
+#dbTabBar .dbt.on{background:var(--bg);color:var(--tx);font-weight:600}
+
+/* Layout Enhancement: KPI Header */
+#pjHead{padding:8px 12px;gap:8px}
+.kc{min-width:44px;padding:4px 6px}
+.kv{font-size:13px}
+.kl{font-size:9px}
+
+/* Layout Enhancement: Cubicle Bar */
+.cub-mini{font-size:9px;padding:3px 5px;min-width:28px}
+
+/* Uniform toggle chip for all clinical flags (except WR) */
+.tgun{background:rgba(94,234,212,.08);color:#5eead4;border-color:rgba(94,234,212,.25);box-shadow:0 0 3px rgba(94,234,212,.08)}
+
+
+/* === NEON GLOW ENHANCEMENTS === */
+.cb-b.occupied:hover{box-shadow:0 0 14px rgba(34,211,238,.15),0 0 4px rgba(34,211,238,.08)}
+.tgun:hover{box-shadow:0 0 10px rgba(94,234,212,.35);background:rgba(94,234,212,.18);border-color:rgba(94,234,212,.45)}
+.tchip.on{box-shadow:0 0 10px rgba(34,197,94,.3),0 0 20px rgba(34,197,94,.12),inset 0 0 6px rgba(34,197,94,.1);text-shadow:0 0 4px rgba(34,197,94,.2)}
+#pjHead .kc:hover{box-shadow:0 0 8px rgba(56,189,248,.1)}
+
+/* === PATIENT PROFILE MODAL === */
+#ppModal{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);align-items:center;justify-content:center;font-family:system-ui,sans-serif}
+#ppModal.on{display:flex}
+.pp-section{margin-bottom:14px;padding:10px 12px;background:var(--bg2);border:1px solid var(--bd2);border-radius:8px}
+.pp-hd{font:700 12px system-ui;color:var(--tx2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd2)}
+.pp-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px;color:var(--tx)}
+.pp-row .label{color:var(--tx3);font-size:11px}
+.pp-row .val{font-weight:600;color:var(--tx)}
+.pp-tag{display:inline-flex;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;margin:2px;border:1px solid}
+.pp-tag.present{background:rgba(34,197,94,.1);color:var(--ok);border-color:rgba(34,197,94,.3)}
+.pp-tag.future{background:rgba(56,189,248,.1);color:var(--acc);border-color:rgba(56,189,248,.3)}
+.pp-tag.past{background:rgba(148,163,184,.1);color:var(--tx3);border-color:rgba(148,163,184,.2)}
+/* Floor pairing row tint */
+.cubicle:nth-child(even){background:rgba(56,189,248,.04) !important}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- HEADER v4 - All in one row: C8 + DateTime + KPI + Actions -->
+<div class="hdr">
+  <div class="hdr-row top">
+    <button class="btn btn-s" id="btnBack" style="display:none;font-size:10px;padding:2px 6px;flex-shrink:0" onclick="goBack()">&larr; Back</button>
+    <span id="hdrDateTime" style="font:700 13px system-ui;color:var(--acc);flex-shrink:0;white-space:nowrap;background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1.5px solid var(--acc);border-radius:24px;padding:5px 14px;box-shadow:0 0 10px rgba(56,189,248,.15),var(--shadow-sm);letter-spacing:0.3px;text-shadow:0 0 6px rgba(56,189,248,.2)"></span>
+    <div class="hdr-kpi" id="hdrKpi" style="flex-shrink:1;overflow:hidden"></div>
+    <div class="hdr-actions" style="flex-shrink:0">
+      <span id="wrClickIndicator" style="display:none;font:700 9px system-ui;color:var(--ok);background:rgba(34,197,94,.15);padding:1px 3px;border-radius:3px;border:1px solid var(--ok);white-space:nowrap">WR</span>
+      <button class="btn btn-p" style="font-size:11px;padding:3px 8px;box-shadow:0 0 10px rgba(56,189,248,.35),0 0 20px rgba(56,189,248,.15);text-shadow:0 0 4px rgba(255,255,255,.4)" onclick="goToolAdmit()" title="Admit">Admit</button>
+      <button class="btn btn-d" style="font-size:11px;padding:3px 8px;box-shadow:0 0 10px rgba(239,68,68,.3),0 0 20px rgba(239,68,68,.12);text-shadow:0 0 4px rgba(255,255,255,.3)" onclick="goToolDc()" title="Discharge">D/C</button>
+      <button class="btn btn-s" style="font-size:11px;padding:3px 8px;background:rgba(168,85,247,.15);color:#a855f7;border-color:rgba(168,85,247,.4);box-shadow:0 0 10px rgba(168,85,247,.3),0 0 20px rgba(168,85,247,.12);text-shadow:0 0 4px rgba(168,85,247,.3)" onclick="goToolMove()" title="Move">Move</button>
+      <input type="text" id="hdrSearch" placeholder="Search..." style="font-size:11px;width:60px;padding:2px 4px;border-radius:3px" onkeydown="if(event.key==='Enter')hdrSearchBed()">
+      <span id="roleChips" style="display:flex;gap:3px">
+        <span class="tchip" id="roleNurse" onclick="setRole('nurse')" style="font-size:10px;padding:2px 6px;cursor:pointer">Nurse</span>
+        <span class="tchip" id="roleAdmin" onclick="setRole('admin')" style="font-size:10px;padding:2px 6px;cursor:pointer">Admin</span>
+        <span class="tchip" id="roleManager" onclick="setRole('manager')" style="font-size:10px;padding:2px 6px;cursor:pointer">Manager</span>
+      </span>
+      <button class="btn btn-s sbtn-settings" style="font-size:11px;padding:3px 8px;display:inline-flex;align-items:center;gap:5px;box-shadow:0 0 8px rgba(56,189,248,.2),0 0 16px rgba(56,189,248,.08)" onclick="openSettings()" title="Settings"><span style="font-size:13px">&#9881;</span><span style="font:600 11px system-ui;white-space:nowrap">Settings</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainEl">
+  <!-- LEFT: Floor Plan -->
+  <div class="left">
+    <div class="panel-title"><span class="panel-title-ic">🛏️</span><span>Floor Plan</span></div>
+    <div class="floor" id="floor" onclick="if(event.target===this){S.ui.selectedCubicle=null;save();renderFloor();}"></div>
+  </div>
+  <!-- RIGHT: Risk & Appointments -->
+  <div class="rp" id="rightPanel">
+    <div class="panel-title"><span class="panel-title-ic">⚑</span><span>Risk & Appointments</span></div>
+    <div class="rp-db" id="rpDbWrap" style="padding:0;gap:0;flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column">
+      <div class="rp-db-inner" id="rpDbInner" style="padding:6px;gap:4px;flex:1;overflow-y:auto"></div>
+      <div class="rp-pp" id="rpPp" style="display:none;flex:1;overflow-y:auto">
+        <div class="ppnav" id="ppNav"></div>
+        <div class="pphd">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span id="ppWard" style="font:800 var(--fs) system-ui;color:var(--acc)">--</span>
+            <span id="ppDr" style="font:600 var(--fs-xs) system-ui;color:var(--tx2)">--</span>
+            <span id="ppRelief" style="font:600 var(--fs-xs) system-ui;color:var(--wa);display:none"></span>
+            <span id="ppWrFlag" style="margin-left:auto"></span>
+          </div>
+          <div class="ppsub" id="ppSub"></div>
+          <div class="pcmo" id="ppCmo"></div>
+        </div>
+        <div class="ppbd" id="ppBd"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- BOTTOM: Inline Profile -->
+<div class="bottom-profile" id="bottomProfile" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px;background:var(--bg3);border-bottom:1px solid var(--bd);cursor:pointer" onclick="toggleBottomProfile()">
+    <span style="font:700 11px system-ui;color:var(--acc);text-transform:uppercase;letter-spacing:.5px">Patient Profile</span>
+    <span id="bpTitle" style="font:600 11px system-ui;color:var(--tx2)">--</span>
+    <span style="font:600 11px;color:var(--tx3)">&#x25BC;</span>
+  </div>
+  <div id="bpBody" style="flex:1;overflow-y:auto;padding:6px"></div>
+</div>
+
+
+<!-- NOTICE BAR - hidden -->
+<div class="nbar" id="nbar" style="display:none">
+  <span class="nlbl" onclick="openNotice()" style="cursor:pointer">Notice</span>
+  <span class="ntxt" id="ntxt" onclick="openNotice()" style="cursor:pointer;flex:1"></span>
+  <button class="btn btn-s" onclick="event.stopPropagation();openSettings()" style="font-size:12px;padding:2px 8px;margin-right:6px">Settings</button>
+  <div id="nbarDt" style="display:flex;align-items:center"></div>
+</div>
+
+<!-- SETTINGS -->
+<div class="view" id="vSet" style="display:none">
+  <div style="max-width:820px;margin:0 auto;padding:10px 12px 24px">
+    <div style="position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <span style="font:700 13px system-ui;color:var(--acc);margin-right:6px">Settings</span>
+      <span class="tchip on" id="setTabDisplay" onclick="setSetTab('display')">Display</span>
+      <span class="tchip" id="setTabBeds" onclick="setSetTab('beds')">Beds</span>
+      <span class="tchip" id="setTabFlags" onclick="setSetTab('flags')">Flags</span>
+      <span class="tchip" id="setTabStaff" onclick="setSetTab('staff')">Staff</span>
+      <span class="tchip" id="setTabData" onclick="setSetTab('data')">Data</span>
+      <button class="btn btn-p" style="margin-left:auto;font-size:11px;padding:3px 8px" onclick="closeSettings()">Back</button>
+    </div>
+    <div id="setPaneDisplay">
+      <div class="ppc">
+        <div class="ppt">Appearance</div>
+        <div style="display:flex;gap:4px">
+          <span class="tchip on" id="thmDark" onclick="setTheme('dark')" style="cursor:pointer;font-size:var(--fs-xs);padding:2px 10px">Dark</span>
+          <span class="tchip" id="thmLight" onclick="setTheme('light')" style="cursor:pointer;font-size:var(--fs-xs);padding:2px 10px;color:var(--tx3);border-color:var(--bd)">Light</span>
+        </div>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+          <span style="font:600 var(--fs-xs) system-ui;color:var(--tx2);white-space:nowrap">Tab Font</span>
+          <input type="range" id="tabFontRange" min="10" max="18" value="14" style="flex:1;accent-color:var(--acc)" oninput="setTabFontSize(this.value)">
+          <span id="tabFontVal" style="font:600 var(--fs-xs) system-ui;color:var(--acc);min-width:24px;text-align:right">14</span>
+        </div>
+      </div>
+      <div class="ppc">
+        <div class="ppt">Layout & View</div>
+        <div style="font-size:12px;color:var(--tx3);margin-bottom:6px">Display ratio and view mode</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px">
+          <span class="tchip on" id="layDef" onclick="setLayout('default')" style="cursor:pointer;font-size:var(--fs-xs);padding:2px 10px">Default</span>
+          <span class="tchip" id="lay169" onclick="setLayout('16:9')" style="cursor:pointer;font-size:var(--fs-xs);padding:2px 10px;color:var(--tx3);border-color:var(--bd)">16:9</span>
+          <span class="tchip" id="lay43" onclick="setLayout('4:3')" style="cursor:pointer;font-size:var(--fs-xs);padding:2px 10px;color:var(--tx3);border-color:var(--bd)">4:3</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px;background:var(--bg);border-radius:6px;border:1px solid var(--bd)">
+          <span style="font-size:var(--fs-xs);color:var(--tx2);font-weight:600">Simplified View</span>
+          <div class="tsw" id="simTsw" onclick="toggleSimplified()"></div>
+          <span style="font-size:12px;color:var(--tx3)">Floor + App + Bath + PP only</span>
+        </div>
+      </div>
+      <div class="ppc">
+        <div class="ppt">Bed Card Display</div>
+        <div style="font-size:12px;color:var(--tx3);margin-bottom:6px">Configure what appears on each bed card</div>
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+          <span style="font:600 11px system-ui;color:var(--tx2);white-space:nowrap">Max Flags</span>
+          <input type="range" min="1" max="5" value="3" id="bccMaxFlags" style="flex:1;accent-color:var(--acc)" oninput="setBccMaxFlags(this.value)">
+          <span id="bccMaxFlagsVal" style="font:600 11px system-ui;color:var(--acc);min-width:20px;text-align:right">3</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px">
+          <button class="tchip" id="bccFlags" onclick="toggleBcc('showFlags')" style="font-size:12px;padding:3px 8px">Flags</button>
+          <button class="tchip" id="bccDr" onclick="toggleBcc('showDr')" style="font-size:12px;padding:3px 8px">Doctor</button>
+          <button class="tchip" id="bccDx" onclick="toggleBcc('showDx')" style="font-size:12px;padding:3px 8px">Diagnosis</button>
+          <button class="tchip" id="bccAllergies" onclick="toggleBcc('showAllergies')" style="font-size:12px;padding:3px 8px">Allergies</button>
+          <button class="tchip" id="bccFeed" onclick="toggleBcc('showFeed')" style="font-size:12px;padding:3px 8px">Feed</button>
+          <button class="tchip" id="bccMob" onclick="toggleBcc('showMob')" style="font-size:12px;padding:3px 8px">Mobility</button>
+          <button class="tchip" id="bccCmo" onclick="toggleBcc('showCMO')" style="font-size:12px;padding:3px 8px">CMO</button>
+          <button class="tchip" id="bccAid" onclick="toggleBcc('showAid')" style="font-size:12px;padding:3px 8px">AIDS</button>
+          <button class="tchip" id="bccWh" onclick="toggleBcc('showWH')" style="font-size:12px;padding:3px 8px">WH</button>
+        </div>
+      </div>
+      <div class="ppc">
+        <div class="ppt" onclick="renderSumItemsInline()">Summary Display (click to toggle)</div>
+        <div style="font-size:12px;color:var(--tx3);margin-bottom:4px">Select which sections appear in Summary tab</div>
+        <div id="sumItems" style="display:flex;flex-wrap:wrap;gap:3px;padding:4px 0">
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('clinical')">Clinical Risk</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('app')">Today</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('screen')">Screen Overdue</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('dc')">DC Today</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('wr')">WR Status</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('onleave')">On Leave</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('mdro')">MDRO Count</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('plan')">Plan Types</button>
+          <button class="tchip on" style="font-size:12px;padding:3px 8px" onclick="toggleSumItemInline('doneApp')">Done</button>
+        </div>
+      </div>
+      <div class="ppc">
+        <div class="ppt">Auto Backup</div>
+        <div style="display:flex;gap:4px">
+          <span class="tchip on" id="bk5" onclick="setBackupFreq(5)" style="cursor:pointer;font-size:12px;padding:3px 8px">5m</span>
+          <span class="tchip" id="bk10" onclick="setBackupFreq(10)" style="cursor:pointer;font-size:12px;padding:3px 8px;color:var(--tx3);border-color:var(--bd)">10m</span>
+          <span class="tchip" id="bk30" onclick="setBackupFreq(30)" style="cursor:pointer;font-size:12px;padding:3px 8px;color:var(--tx3);border-color:var(--bd)">30m</span>
+          <span class="tchip" id="bk60" onclick="setBackupFreq(60)" style="cursor:pointer;font-size:12px;padding:3px 8px;color:var(--tx3);border-color:var(--bd)">60m</span>
+        </div>
+      </div>
+    </div>
+    <div id="setPaneBeds" style="display:none">
+      <div class="ppc">
+        <div class="ppt">Bed Management</div>
+        <div id="hidBedList"></div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:6px;padding:6px;background:var(--bg);border-radius:4px;border:1px solid var(--bd);line-height:1.6">
+          <b style="color:var(--tx2)">How to use:</b><br>
+          <b>Hide/Show</b> — Click any bed number below to toggle visibility<br>
+          <b>Generate</b> — Enter bed number + select cubicle to add<br>
+          <b>Drag</b> — Click & hold to drag bed to another cubicle
+        </div>
+      </div>
+    </div>
+    <div id="setPaneFlags" style="display:none">
+      <div class="ppc">
+        <div class="ppt">Flag Visibility & Colour</div>
+        <div id="flagSettingsPanel" style="max-height:400px;overflow-y:auto;margin-bottom:8px"></div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-s" onclick="resetFlagDefaults()" style="font-size:11px">Reset Defaults</button>
+          <button class="btn btn-s" onclick="renderFlagSettings()" style="font-size:11px">Refresh Flags</button>
+        </div>
+      </div>
+    </div>
+    <div id="setPaneStaff" style="display:none">
+      <div class="ppc">
+        <div class="ppt">Wards & Doctors</div>
+        <div style="font-size:12px;color:var(--tx3);margin-bottom:6px">Click ward to toggle doctor assignment. Format: Dr. Family Initial (e.g. Dr. Wong KK)</div>
+        <div id="wardDocEl" style="font-size:var(--fs-xs);margin-bottom:6px;padding:4px;border:1px solid var(--bg3);border-radius:3px"></div>
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          <input id="newWardName" placeholder="+ New ward (e.g. C10)" style="font-size:var(--fs-xs);flex:1" onkeydown="if(event.key==='Enter')addWard()">
+          <button class="btn btn-p" style="font-size:12px;padding:3px 8px" onclick="addWard()">+</button>
+        </div>
+        <div style="border-top:1px solid var(--bd);padding-top:6px;margin-top:6px">
+          <div style="font:600 12px system-ui;color:var(--tx3);margin-bottom:4px">ADD DOCTOR</div>
+          <div style="display:flex;gap:4px;margin-bottom:4px;align-items:center">
+            <span style="font-size:var(--fs-xs);color:var(--tx3);font-weight:600;white-space:nowrap">Dr.</span>
+            <input id="newDocName" placeholder="Family Initial (e.g. Wong KK)" style="font-size:var(--fs-xs);flex:1" onkeydown="if(event.key==='Enter')addDoctor()">
+            <select id="newDocWard" style="font-size:var(--fs-xs)"></select>
+            <button class="btn btn-p" style="font-size:12px;padding:3px 8px" onclick="addDoctor()">+</button>
+          </div>
+          <div id="docPromptEl" style="font-size:12px;margin-top:4px"></div>
+        </div>
+      </div>
+      <div class="ppc">
+        <div class="ppt">Calendar Schedule</div>
+        <div style="font-size:var(--fs-xs);color:var(--tx3);margin-bottom:6px">Click any slot in the calendar to edit. 3 rows per date: 09-13, 13-17, 17-09.</div>
+        <button class="btn btn-p" style="font-size:var(--fs-xs);padding:3px 8px" onclick="document.getElementById('calOverlay').style.display='flex';renderCal()">Open Calendar</button>
+      </div>
+    </div>
+    <div id="setPaneData" style="display:none">
+      <div class="ppc">
+        <div class="ppt">Data Actions</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="doExport()" style="font-size:var(--fs-xs);padding:3px 8px;box-shadow:0 0 8px rgba(56,189,248,.3)">Export JSON</button>
+          <label class="btn btn-s" style="cursor:pointer;font-size:var(--fs-xs);padding:3px 8px;box-shadow:0 0 8px rgba(56,189,248,.15)"><input type="file" style="display:none" accept=".json" onchange="doImport(this)">Import JSON</label>
+          <button class="btn btn-p" onclick="doExportCSV()" style="font-size:var(--fs-xs);padding:3px 8px;box-shadow:0 0 8px rgba(56,189,248,.3)">Export CSV</button>
+          <button class="btn btn-p" onclick="downloadHtml()" style="font-size:var(--fs-xs);padding:3px 8px;box-shadow:0 0 8px rgba(56,189,248,.3)">Download HTML</button>
+          <button class="btn btn-p" onclick="saveBackupConfirm()" style="font-size:var(--fs-xs);padding:3px 8px;box-shadow:0 0 8px rgba(56,189,248,.3)">Save Backup</button>
+          <button class="btn btn-w" onclick="restoreBackupConfirm()" style="font-size:var(--fs-xs);padding:3px 8px;box-shadow:0 0 8px rgba(245,158,11,.2)">Restore</button>
+        </div>
+      </div>
+      <div class="ppc">
+        <div class="ppt">Screening Integrity <button class="btn btn-p" style="font-size:var(--fs-xs);padding:3px 8px;margin-left:6px" onclick="runScrIntegrity()">Run Check</button></div>
+        <div id="scrIntRes" style="font-size:var(--fs-xs)"><span style="color:var(--tx3)">Click Run Check to scan</span></div>
+      </div>
+      <div class="ppc">
+        <div class="ppt" onclick="renderSetLogInline()">Transaction Log</div>
+        <div id="setLogList" style="max-height:300px;overflow-y:auto;font-size:var(--fs-xs);padding:4px 0"><span style="color:var(--tx3)">Click header to refresh</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- NOTICE MODAL -->
+<div class="view" id="nModal" onclick="if(event.target===this)closeNotice()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--bd2);border-radius:6px;width:700px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:8px 12px;border-bottom:1px solid var(--bd);background:var(--bg3);display:flex;align-items:center;justify-content:space-between"><span style="font:700 var(--fs) system-ui;color:var(--acc)">Ward Notice</span><button class="btn btn-s" onclick="closeNotice()">&times;</button></div>
+    <div style="flex:1;overflow-y:auto;padding:10px" id="nMb"></div>
+    <div style="padding:6px 12px;border-top:1px solid var(--bd);background:var(--bg3);display:flex;gap:4px">
+      <button class="btn btn-p" onclick="saveNotices()">Confirm</button>
+      <button class="btn btn-s" onclick="closeNotice()">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- PENDING MODAL -->
+<div class="pend-overlay" id="pendOverlay" onclick="if(event.target===this)closePending()">
+  <div class="pend-box">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--bg3);display:flex;align-items:center;justify-content:space-between">
+      <span style="font:700 var(--fs) system-ui;color:var(--acc)">Pending Actions</span>
+      <button class="btn btn-s" onclick="closePending()">&times;</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:10px" id="pendBody"></div>
+  </div>
+</div>
+
+<!-- DAILY RESET MODAL -->
+<div class="rst-overlay" id="rstOverlay" onclick="if(event.target===this)closeDailyReset()">
+  <div class="rst-box">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--bg3);display:flex;align-items:center;justify-content:space-between">
+      <span style="font:700 var(--fs) system-ui;color:var(--wa)">Daily Reset Wizard</span>
+      <button class="btn btn-s" onclick="closeDailyReset()">&times;</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:12px">
+      <div style="font-size:var(--fs-xs);color:var(--tx3);margin-bottom:10px"><b>This will reset daily state.</b> Demographics, MDRO, diagnosis, future apps and plans are preserved. Check items below to see what will be affected.</div>
+      <div id="rstPreview"></div>
+      <div class="ppc" style="margin-bottom:8px">
+        <div class="ppr"><span class="ppl">Clear Ward Rounds</span><div class="tsw on" id="rstWr"></div></div>
+        <div class="ppr"><span class="ppl">Archive Past Apps</span><div class="tsw on" id="rstAp"></div></div>
+        <div class="ppr"><span class="ppl">Clear Temp Highlights</span><div class="tsw on" id="rstHi"></div></div>
+        <div class="ppr"><span class="ppl">Clear Handover Text</span><div class="tsw on" id="rstHo"></div></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="wf-label">Type NEWDAY to confirm</div>
+        <input id="rstConfirm" placeholder="NEWDAY" style="width:100%;font-size:var(--fs-sm);padding:6px 8px">
+      </div>
+    </div>
+    <div style="padding:8px 14px;border-top:1px solid var(--bd);background:var(--bg3);display:flex;gap:6px;justify-content:flex-end">
+      <button class="btn btn-s" onclick="closeDailyReset()">Cancel</button>
+      <button class="btn btn-w" onclick="runDailyReset()">Confirm Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREENING RESULT MODAL -->
+<div class="rst-overlay" id="scrResModal" onclick="if(event.target===this)closeScrResModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1001;align-items:center;justify-content:center">
+  <div style="background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;max-width:340px;width:90%;padding:14px">
+    <div style="font:700 var(--fs) system-ui;color:var(--acc);margin-bottom:8px">Enter Screening Result</div>
+    <div id="scrResInfo" style="font-size:var(--fs-xs);color:var(--tx2);margin-bottom:10px"></div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:var(--fs-xs);color:var(--tx3)">Key Findings</label>
+      <textarea id="scrResInput" rows="3" style="width:100%;font-size:var(--fs-xs);background:var(--bg);border:1px solid var(--bd);border-radius:4px;padding:6px;color:var(--tx)" placeholder="Enter key findings..."></textarea>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <button class="btn btn-g" onclick="saveScrResult('negative')" style="flex:1;font-size:12px">Negative</button>
+      <button class="btn btn-er" onclick="saveScrResult('positive')" style="flex:1;font-size:12px">Positive</button>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-s" onclick="closeScrResModal()" style="flex:1">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT ENTRY MODAL -->
+<div class="rst-overlay" id="resModal" onclick="if(event.target===this)closeResModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;width:400px;max-width:96vw;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:10px 14px;border-bottom:1px solid var(--bd);background:var(--bg3);display:flex;align-items:center;justify-content:space-between">
+      <span style="font:700 var(--fs) system-ui;color:var(--acc)">Enter Result</span>
+      <button class="btn btn-s" onclick="closeResModal()">&times;</button>
+    </div>
+    <div style="padding:12px 14px">
+      <div id="resModalInfo" style="font-size:var(--fs-xs);color:var(--tx2);margin-bottom:8px"></div>
+      <textarea id="resModalInput" rows="4" placeholder="Key findings..." spellcheck="true" style="font-size:var(--fs-xs);width:100%;padding:6px"></textarea>
+    </div>
+    <div style="padding:8px 14px;border-top:1px solid var(--bd);background:var(--bg3);display:flex;gap:6px;justify-content:flex-end">
+      <button class="btn btn-s" onclick="closeResModal()">Cancel</button>
+      <button class="btn btn-p" onclick="saveResModal()">Save Result</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOVER POPUP -->
+<div id="hpop"></div>
+
+<!-- HANDOVER PRINT -->
+<div class="ho-print" id="hoPrint"></div>
+
+<!-- TOAST -->
+<div class="tc-box" id="tc"></div>
+
+<script>
